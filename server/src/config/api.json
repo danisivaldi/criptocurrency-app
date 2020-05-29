@@ -1,0 +1,9 @@
+{
+    "url": "https://min-api.cryptocompare.com/data/top/totalvolfull",
+    "params": {
+        "api_key" : "1b77159fd738954a7062f9ac985943cc43c326c63b70cec8613ebb96d36b3468", 
+        "tsym" : "BRL", 
+        "limit": "10"
+    }
+}
+
