@@ -8,7 +8,10 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { globalStyles } from '../styles/global';
+import api from '../services/api';
 
 export default class Register extends Component {
     static navigationOptions = {
@@ -21,26 +24,30 @@ export default class Register extends Component {
           fontWeight: 'bold',
           fontSize: 20,
         },
-      };
+    };
 
     state = {
         name: "",
         email: "",
         pass: "",
-        error: null,
+        errorMessage: null
     };
 
-    singUpHandle = () => {
-        /* cria usuário novo e registra no bd */
-        //firebase
-          //  .auth()
-          //  .createUserWithEmailAndPassword(this.state.email, this.state.pass)
-          //  .then(credentials => {
-          //     return credentials.user.updateProfile({
-          //          username: this.state.name
-          //      })
-          //  })
-          //  .catch(err => this.setState({ error: err.message }));
+    signUp = async () => {
+        try {
+            const response = await api.post('/auth/register', {
+                name: this.state.name,
+                email: this.state.email,
+                password: this.state.pass
+            });
+    
+            const { token } = response.data;
+            await AsyncStorage.setItem('@CcApp:token', token);
+    
+            this.props.navigation.navigate('Home')
+        } catch (response) {
+            this.setState({ errorMessage: response.data.error });
+        }
     };
 
     render() {
@@ -53,9 +60,8 @@ export default class Register extends Component {
                     <Text style={globalStyles.greeting}>Enter your credentials</Text>
 
                     <View style={globalStyles.errorMessage}>
-                        {this.state.error && <Text style={globalStyles.error}>{this.state.error}</Text>}
+                        {this.state.errorMessage && <Text style={globalStyles.error}>{this.state.errorMessage}</Text>}
                     </View>
-                    {/* formulário de cadastro */}
                     <View style={globalStyles.form}>
                         <View>
                             <Text style={globalStyles.inputTitle}>FULL NAME</Text>
@@ -88,7 +94,7 @@ export default class Register extends Component {
                             ></TextInput>
                         </View>
 
-                        <TouchableOpacity style={globalStyles.button} onPress={this.singUpHandle}>
+                        <TouchableOpacity style={globalStyles.button} onPress={this.signUp}>
                             <Text style={globalStyles.buttonText}>Sing up</Text>
                         </TouchableOpacity>
 

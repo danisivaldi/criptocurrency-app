@@ -1,4 +1,4 @@
-import React, { Component }  from 'react';
+import React, { Component } from 'react';
 import { 
     StyleSheet,
     View,
@@ -9,7 +9,10 @@ import {
     Keyboard,
     StatusBar,
 } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { globalStyles } from '../styles/global';
+import api from '../services/api';
 
 export default class Login extends Component {
     static navigationOptions = {
@@ -22,24 +25,29 @@ export default class Login extends Component {
           fontWeight: 'bold',
           fontSize: 20,
         },
-      };
+    };
     
-
     state = {
         email: "",
         pass: "",
-        error: null,
+        errorMessage: null,
     }
 
-    loginHandle = () => {
-        //const { email, pass } = this.state;
+    signIn = async () => {
+        try {
+            const response = await api.post('/auth/authenticate', {
+                email: this.state.email,
+                password: this.state.pass
+            });
+    
+            const { token } = response.data;
+            await AsyncStorage.setItem('@CcApp:token', token);
 
-        /* loga no app se as credenciais estiverem no bd */
-        //firebase
-          //  .auth()
-           // .signInWithEmailAndPassword(email, pass)
-           // .catch(err => this.setState({ error: err.message }));
-    }
+            this.props.navigation.navigate('Home')
+        } catch (response) {
+            this.setState({ errorMessage: response.data.error });
+        }
+    };
 
 
     render() {
@@ -52,7 +60,7 @@ export default class Login extends Component {
                     <Text style={globalStyles.greeting}>Welcome to AppCripto</Text>
 
                     <View style={globalStyles.errorMessage}>
-                        {this.state.error && <Text style={globalStyles.error}>{this.state.error}</Text>}
+                        {this.state.errorMessage && <Text style={globalStyles.error}>{this.state.errorMessage}</Text>}
                     </View>
                     <View style={globalStyles.form}>
                         <View>
@@ -76,7 +84,7 @@ export default class Login extends Component {
                             ></TextInput>
                         </View>
 
-                        <TouchableOpacity style={globalStyles.button} onPress={this.loginHandle}>
+                        <TouchableOpacity style={globalStyles.button} onPress={this.signIn}>
                             <Text style={globalStyles.buttonText}>Sing in</Text>
                         </TouchableOpacity>
 

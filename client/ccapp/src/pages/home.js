@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import { 
-    StyleSheet,
-    View,
-    Text,
-    TouchableOpacity,
+    StyleSheet, 
+    View, 
+    Text, 
+    TouchableOpacity, 
     FlatList,
 } from 'react-native';
 
-// import api from '../services/api'
+import api from '../services/api'
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Home extends Component {
     static navigationOptions = {
@@ -20,31 +21,37 @@ export default class Home extends Component {
           fontWeight: 'bold',
           fontSize: 20,
         },
-      };
+    };
 
     state = {
-        email: "",
-        username: "",
         coins: [],
+        errorMessage: null
     }
 
     componentDidMount() {
-        //const { email, username } = firebase.auth().currentUser;
-        //this.setState({ email, username });
-        //this.loadCoins();
+        this.loadCoins();
     }
 
     loadCoins = async () => {
-        //const response = await api.get("/toplist");
+        try {
+            const response = await api.get('/coins/toplist');
 
-        //const { coins } = response.data;
+            const { coins } = response.data;
+            this.setState({ coins });
 
-        //this.setState({ coins });
+          } catch (response) {
+            this.setState({ errorMessage: response.data.error });
+          }
     }
 
-    signOutUser = () => {
-        //firebase.auth().signOut();
-    }
+    signOut = async () => {
+        try {
+            await AsyncStorage.removeItem('@CcApp:token');
+            this.props.navigation.navigate('Login');
+        } catch (err) {
+            console.log(err)
+        }
+      };
 
     renderItem = ({ item }) => (
         <View style={styles.coinContainer}>
@@ -78,7 +85,7 @@ export default class Home extends Component {
         <>
             <View style={styles.container}>
                 <View style={styles.top}>
-                    <TouchableOpacity style={styles.topBox} onPress={this.signOutUser}>
+                    <TouchableOpacity style={styles.topBox} onPress={this.signOut}>
                         <Text style={styles.topBoxText}>Logout</Text>
                     </TouchableOpacity>
                 </View>
