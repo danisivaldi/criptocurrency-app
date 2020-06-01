@@ -10,7 +10,7 @@ Para acessar os dados das moedas, utilizei a api criptocompare (https://min-api.
 
 No back-end, usamos o MongoDB para guardar as informações de usuário.
 
-## Produção
+## Execução
 
 Para rodar o aplicativo, siga os seguintes passos:
 
@@ -25,15 +25,17 @@ cd server
 docker-compose up
 ```
 
-Localmente:
+Localmente, é preciso ter o mongo instalado, e em seguida rodar:
 
 ```
-node server/src/index.js
+cd server
+npm install
+node src/index.js
 ```
 
 ### Cliente
 
-Para executar o aplicativo iOS em sua máquina de desenvolvimento, primeiro instale o cocoapods:
+Para executar o aplicativo iOS em sua máquina de desenvolvimento, é necessário ter um simulador iOS instalado. Em seguida, instale o cocoapods:
 
 ```
 cd client/ios
@@ -41,14 +43,16 @@ sudo gem install cocoapods
 pod install
 ```
 
-Em seguide, rode o projeto no simulador:
+Depois, rode o projeto no simulador:
 
 ```
 cd client
 react-native run-ios
 ```
 
-Para gerar o build (ideal para produção) execute o seguinte comando no diretório cliente:
+Uma janela do terminal irá abrir com o Metro Bundler, e para rodar o aplicativo, simplesmente pressione "r".
+
+Para gerar o build da aplicação (ideal para produção) execute o seguinte comando no diretório cliente:
 
 ```
 react-native build
@@ -73,7 +77,8 @@ const api = create({
     baseURL: 'https://d-ccapp.herokuapp.com',
 });
 ```
-Desse modo, só é necessário seguir os passos da sessão cliente no tópico produção.
+
+Desse modo, só é necessário seguir os passos da sessão cliente no tópico execução.
 
 O exercício 1 proposto pela especificacão do processo seletivo se encontra no arquivo _fluke.py_
 
